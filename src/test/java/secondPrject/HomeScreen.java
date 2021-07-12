@@ -25,7 +25,9 @@ public class HomeScreen extends BasePage {
     }
 
     public void search() {
+        //clickElement(By.cssSelector("svg[preserveAspectRatio=\"none\"]"));
         clickElement(By.id("ember1038"));
+
     }
 }
 
