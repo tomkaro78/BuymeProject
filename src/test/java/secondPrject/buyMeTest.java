@@ -2,22 +2,25 @@ package secondPrject;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.w3c.dom.Document;
 
-import java.util.ArrayList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Time;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,19 +30,20 @@ public class buyMeTest {
     String password = "tomkKk78905";
     private static ExtentReports extent;
     private static ExtentTest test;
+    private static WebDriver driver;
 
 
-    private static ChromeDriver driver;
     LoginPage loginPage = new LoginPage();
     HomeScreen homeScreen = new HomeScreen();
     PickBusiness pickBusiness = new PickBusiness();
     SenderReceiverInformationScreen senderReceiverInformationScreen = new SenderReceiverInformationScreen();
+    HowToSendPage howToSendPage = new HowToSendPage();
 
 
     @BeforeClass
     public void runOnce() {
         String cwd = System.getProperty("user.dir");
-        ExtentSparkReporter htmlReporter = new ExtentSparkReporter(cwd + "\\extent.html");
+        ExtentSparkReporter htmlReporter = new ExtentSparkReporter(cwd + "\\extent.html");  //Establish report location
         extent = new ExtentReports();
         extent.attachReporter(htmlReporter);
         // name your test and add description
@@ -47,22 +51,21 @@ public class buyMeTest {
         // log results
         test.log(Status.INFO, "@Before class");
 
-       try {
-           driver = DriverSingleton.getDriverInstance();
-
-           test.log(Status.PASS, "Driver established successfully");
-       } catch (Exception e) {
-           e.printStackTrace();
-           test.log(Status.FAIL, "Driver connection failed! " + e.getMessage());
-       }
-           driver.get("https://buyme.co.il/");
-           driver.manage().window().maximize();
-           driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        try {
+            driver = DriverSingleton.getDriverInstance();
+            test.log(Status.PASS, "Driver established successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            test.log(Status.FAIL, "Driver connection failed! " + e.getMessage());
+        }
+        driver.get("https://buyme.co.il/");
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
     }
 
-    //@Test
-    public void introAndRegisration()  {
+    //@Test // Registration process
+    public void introAndRegistration() {
         try {
             loginPage.register();
             Assert.assertEquals(name, driver.findElement(By.className("ember-text-field")).getText());
@@ -73,86 +76,96 @@ public class buyMeTest {
             test.log(Status.PASS, "Register completed successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            test.log(Status.FAIL, "Register failed! " + e.getMessage());
+            test.log(Status.FAIL, "Register failed! " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
         }
     }
 
-    @Test(priority = 1)
+    @Test(priority = 1) // Login process
     public void loginToBuyMe() {
         try {
             loginPage.loginBuyMe();
             test.log(Status.PASS, "Login completed successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            test.log(Status.FAIL, "Login failed! " + e.getMessage());
+            test.log(Status.FAIL, "Login failed! " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
         }
     }
 
-    @Test(priority = 2)
-    public void findGift() throws InterruptedException {
-       try {
-           homeScreen.choosePrice();
-           List<WebElement> priceElement = driver.findElements(By.className("active-result"));
-           for (int i = 0; i < priceElement.size(); i++) {
-               try {
-                   priceElement.get(5).click();
-               } catch (StaleElementReferenceException e) {
-                   e.printStackTrace();
-                   continue;
-               }
-           }
-           homeScreen.chooseArea();
-           List<WebElement> areaElement = driver.findElements(By.className("active-result"));
-           for (int i = 0; i < areaElement.size(); i++) {
-               try {
-                   areaElement.get(5).click();
-               } catch (StaleElementReferenceException e) {
-                   e.printStackTrace();
-                   continue;
-               }
-           }
-           homeScreen.chooseCategory();
-           List<WebElement> categoryElement = driver.findElements(By.className("active-result"));
-           for (int i = 0; i < categoryElement.size(); i++) {
-               try {
-                   categoryElement.get(5).click();
-               } catch (StaleElementReferenceException e) {
-                   e.printStackTrace();
-                   continue;
-               }
-           }
+    @Test(priority = 2) // Search for gift filters
+    public void findGift()  {
+        try {
+            homeScreen.choosePrice();
+            homeScreen.chooseArea();
+            homeScreen.chooseCategory();
 
-           homeScreen.search();
-           test.log(Status.PASS, "Fined gift successfully");
-       } catch (Exception e) {
-           e.printStackTrace();
-           test.log(Status.FAIL, "Gift didn't found " + e.getMessage());
-       }
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollBy(0,2000)"); // Scroll down For Element
+
+            homeScreen.search();
+            test.log(Status.PASS, "Fined gift successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            test.log(Status.FAIL, "Gift didn't found " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
+        }
     }
 
-    @Test (priority = 3)
-    public void enterBusinessAndAmount(){
+    @Test(priority = 3)  //Choose business and amount
+    public void enterBusinessAndAmount() {
         try {
+            String url = "https://buyme.co.il/search?budget=5&category=5&region=14";
+            String webUrl = driver.getCurrentUrl();
+            Assert.assertEquals(webUrl, url);
             pickBusiness.pickBusinessAndMount();
             test.log(Status.PASS, "Business choose successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            test.log(Status.FAIL, "Can't choose business  " + e.getMessage());
+            test.log(Status.FAIL, "Can't choose business  " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
         }
     }
 
-    @Test (priority = 4)
-    public void enterReeiverDetails(){
+    @Test(priority = 4)
+    public void enterReceiverDetails() {
         try {
-            senderReceiverInformationScreen.WhoseToSendStep();
-            test.log(Status.PASS, "Receiver details entered successfully");
+            senderReceiverInformationScreen.enterReceiverName();
+            String receiverName = "בר מזל";
+            String receiverNameElement  = driver.findElement(By.id("ember1953")).getText();
+           // Assert.assertEquals(receiverNameElement, receiverName);//לא מצליח לבצע
+            senderReceiverInformationScreen.enterPurpose();
+            senderReceiverInformationScreen.enterTextForBlessing();
 
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollBy(0,2000)");
+
+            senderReceiverInformationScreen.uploadPhoto();
+            Thread.sleep(16000);
+            senderReceiverInformationScreen.pressContinue();
+            test.log(Status.PASS, "Receiver details entered successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            test.log(Status.FAIL, "Receiver details not filled  " + e.getMessage());
+            test.log(Status.FAIL, "Receiver details not filled  " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
+        }
+    }
+
+    @Test(priority = 5)
+    public void enterHowToSend() {
+        try {
+            String senderName = "tomkaro78@gmail.com";
+
+            howToSendPage.sendByMail();
+            howToSendPage.enterSenderName();
+            howToSendPage.paymentSubmit();
+            Thread.sleep(1000);
+            String senderNameElement  = driver.findElement(By.cssSelector("input[placeholder=\"שם שולח המתנה\"]")).getText();
+            Assert.assertEquals(senderNameElement, senderName);
+            test.log(Status.PASS, "Choose how to send successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            test.log(Status.FAIL, "Must choose how to send  " + e.getMessage(), MediaEntityBuilder.createScreenCaptureFromPath(takeScreenShot("NoElementScreenshot")).build());
 
         }
     }
+
+
 
     @AfterClass
     public static void afterClass() {
@@ -163,6 +176,19 @@ public class buyMeTest {
     }
 
 
+
+    //Takes screenshot
+    private static String takeScreenShot(String ImagesPath) {
+        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+        File screenShotFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
+        File destinationFile = new File(ImagesPath + ".png");
+        try {
+            FileUtils.copyFile(screenShotFile, destinationFile);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return ImagesPath + ".png";
+    }
 
 
 }

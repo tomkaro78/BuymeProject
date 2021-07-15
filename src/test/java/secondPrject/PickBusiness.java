@@ -15,12 +15,10 @@ public class PickBusiness extends BasePage {
     }
 
 
-    public void pickBusinessAndMount(){
+    public void pickBusinessAndMount()  {
         clickElement(By.linkText("מסעדת אמא"));
         sendKeysToElement(By.cssSelector("input[placeholder=\"הכנס סכום\"]"), "100");
         clickElement(By.cssSelector("button[gtm=\"בחירה\"]"));
-
-
     }
 
 
