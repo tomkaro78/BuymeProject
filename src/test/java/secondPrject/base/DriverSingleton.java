@@ -1,9 +1,10 @@
-package secondPrject;
+package secondPrject.base;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.w3c.dom.Document;
+import secondPrject.tests.buyMeTest;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +24,8 @@ public class DriverSingleton {
         if(driver == null){
            if(type.equals("Chrome")){
     System.setProperty("webdriver.chrome.driver", "C:\\Users\\LENOVO\\IdeaProjects\\chromedriver.exe");
+//    ChromeOptions chromeOptions = new ChromeOptions();
+//    chromeOptions.addArguments("--headless");
                driver = new ChromeDriver();
             }else if(type.equals("FF")){
                System.setProperty("webdriver.firefox.driver", "C:\\geckodriver\\geckodriver.exe");

@@ -1,9 +1,10 @@
-package secondPrject;
+package secondPrject.webPages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import secondPrject.base.BasePage;
 
-public class HowToSendPage extends BasePage{
+public class HowToSendPage extends BasePage {
 
     public void sendByMail() {
         clickElementFromlist(By.className("circle-area"), 1);

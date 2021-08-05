@@ -1,4 +1,4 @@
-package secondPrject;
+package secondPrject.tests;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -13,15 +13,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.w3c.dom.Document;
+import secondPrject.base.DriverSingleton;
+import secondPrject.webPages.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
-import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class buyMeTest {
@@ -31,6 +27,7 @@ public class buyMeTest {
     private static ExtentReports extent;
     private static ExtentTest test;
     private static WebDriver driver;
+    private static WebDriverWait wait;
 
 
     LoginPage loginPage = new LoginPage();
@@ -92,14 +89,14 @@ public class buyMeTest {
     }
 
     @Test(priority = 2) // Search for gift filters
-    public void findGift()  {
+    public void findGift() {
         try {
             homeScreen.choosePrice();
             homeScreen.chooseArea();
             homeScreen.chooseCategory();
 
             JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("window.scrollBy(0,2000)"); // Scroll down For Element
+            js.executeScript("window.scrollBy(0,100)"); // Scroll down For Element
 
             homeScreen.search();
             test.log(Status.PASS, "Fined gift successfully");
@@ -126,18 +123,18 @@ public class buyMeTest {
     @Test(priority = 4)
     public void enterReceiverDetails() {
         try {
-            senderReceiverInformationScreen.enterReceiverName();
+            WebDriverWait wait = new WebDriverWait(driver, 30);
             String receiverName = "בר מזל";
-            String receiverNameElement  = driver.findElement(By.id("ember1953")).getText();
-           // Assert.assertEquals(receiverNameElement, receiverName);//לא מצליח לבצע
+            senderReceiverInformationScreen.enterReceiverName();
             senderReceiverInformationScreen.enterPurpose();
             senderReceiverInformationScreen.enterTextForBlessing();
+            driver.findElement(By.id("ember2025")).getText();
 
             JavascriptExecutor js = (JavascriptExecutor) driver;
             js.executeScript("window.scrollBy(0,2000)");
 
             senderReceiverInformationScreen.uploadPhoto();
-            Thread.sleep(16000);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[gtm=המשך]")));
             senderReceiverInformationScreen.pressContinue();
             test.log(Status.PASS, "Receiver details entered successfully");
         } catch (Exception e) {
@@ -154,8 +151,7 @@ public class buyMeTest {
             howToSendPage.sendByMail();
             howToSendPage.enterSenderName();
             howToSendPage.paymentSubmit();
-            Thread.sleep(1000);
-            String senderNameElement  = driver.findElement(By.cssSelector("input[placeholder=\"שם שולח המתנה\"]")).getText();
+            String senderNameElement = driver.findElement(By.cssSelector("input[placeholder=\"שם שולח המתנה\"]")).getText();
             Assert.assertEquals(senderNameElement, senderName);
             test.log(Status.PASS, "Choose how to send successfully");
         } catch (Exception e) {
@@ -166,7 +162,6 @@ public class buyMeTest {
     }
 
 
-
     @AfterClass
     public static void afterClass() {
         test.log(Status.INFO, "@After test " + "After test method");
@@ -174,7 +169,6 @@ public class buyMeTest {
         // build and flush report
         extent.flush();
     }
-
 
 
     //Takes screenshot

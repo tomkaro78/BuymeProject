@@ -1,14 +1,11 @@
-package secondPrject;
+package secondPrject.webPages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebElement;
-
-import java.util.List;
+import secondPrject.base.BasePage;
 
 public class HomeScreen extends BasePage {
 
-    public void choosePrice()  {
+    public void choosePrice() {
         clickElement(By.className("chosen-single"));
         getWebElements(By.className("active-result"), 5).click();
 
@@ -20,14 +17,14 @@ public class HomeScreen extends BasePage {
 
     }
 
-    public void chooseCategory()  {
+    public void chooseCategory() {
         clickElement(By.linkText("קטגוריה"));
         getWebElements(By.className("active-result"), 5).click();
 
     }
 
-    public void search()  {
-        clickElement(By.id("ember1038"));
+    public void search() {
+        clickElement(By.id("ember1068"));
 
     }
 }
