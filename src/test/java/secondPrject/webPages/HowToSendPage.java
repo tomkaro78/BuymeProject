@@ -6,6 +6,7 @@ import secondPrject.base.BasePage;
 
 public class HowToSendPage extends BasePage {
 
+
     public void sendByMail() {
         clickElementFromlist(By.className("circle-area"), 1);
         sendKeysToElement(By.cssSelector("input[data-parsley-type=\"email\"]"), Keys.CONTROL + "a");

@@ -6,7 +6,6 @@ import secondPrject.base.BasePage;
 
 public class LoginPage extends BasePage {
 
-
     public void register() {
         enterRegisterPage();
         enterCredentials();

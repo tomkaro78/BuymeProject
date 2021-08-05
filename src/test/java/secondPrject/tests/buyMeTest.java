@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class buyMeTest {
+
     String name = "tom";
     String mail = "hgf667@gmail.com";
     String password = "tomkKk78905";

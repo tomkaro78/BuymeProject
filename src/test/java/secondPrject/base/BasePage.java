@@ -8,6 +8,7 @@ import java.time.Duration;
 
 public class BasePage {
 
+
     private static WebDriver driver;
 
 

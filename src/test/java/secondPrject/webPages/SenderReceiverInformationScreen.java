@@ -6,7 +6,6 @@ import secondPrject.base.BasePage;
 
 public class SenderReceiverInformationScreen extends BasePage {
 
-
     public void enterReceiverName() {
         clearText(By.id("ember2025"));
         sendKeysToElement(By.id("ember2025"), "בר");

@@ -5,6 +5,7 @@ import secondPrject.base.BasePage;
 
 public class HomeScreen extends BasePage {
 
+
     public void choosePrice() {
         clickElement(By.className("chosen-single"));
         getWebElements(By.className("active-result"), 5).click();
